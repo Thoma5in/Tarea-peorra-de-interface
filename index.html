@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IdeaBoost</title>
+  <!-- Google Font moderno -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- ...existing code... -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="container">
+    <main class="card" role="main">
+      <!-- 1. Título -->
+      <header class="header">
+        <h1 class="title">IdeaBoost</h1>
+        <p class="subtitle">Genera ideas creativas al instante — escribe lo que necesitas abajo.</p>
+      </header>
+
+      <!-- 2. Microcopy / Input -->
+      <div class="input-group">
+        <input 
+          type="text" 
+          id="userInput" 
+          placeholder="Ej. 'App para organizar proyectos escolares con gamificación'..." 
+          class="input"
+          aria-label="Describe lo que necesitas crear o resolver"
+        />
+      </div>
+
+      <!-- 3. Ejemplos de prompts (clicables) -->
+      <div class="examples" aria-hidden="false">
+        <p class="example" data-example="Dame una idea para un proyecto escolar innovador.">💡 “Dame una idea para un proyecto escolar innovador.”</p>
+        <p class="example" data-example="Propón un concepto creativo para un emprendimiento pequeño.">💡 “Propón un concepto creativo para un emprendimiento pequeño.”</p>
+        <p class="example" data-example="Ayúdame a generar ideas para un contenido en redes sociales.">💡 “Ayúdame a generar ideas para un contenido en redes sociales.”</p>
+      </div>
+
+      <!-- 4. Botón principal (CTA) -->
+      <button id="generateBtn" class="cta" aria-live="polite">Generar Idea</button>
+
+      <!-- 5. Mensaje de error -->
+      <p id="errorMsg" class="error hidden" role="alert">
+        No pude generar una idea. Escribe algo e inténtalo de nuevo.
+      </p>
+
+      <!-- 6. Mensaje de retroalimentación -->
+      <div id="resultBox" class="result hidden" aria-live="polite">
+        <div class="result-content">
+          <p id="resultText"></p>
+         
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
