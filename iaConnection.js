@@ -1,17 +1,27 @@
-import dotenv from "dotenv";
-dotenv.config();
-
-
 import OpenAI from "openai";
-const openai = new OpenAI();
 
-const response = await openai.responses.create({
-    model: "gpt-5-nano",
-    reasoning: {effort: "low"},
-    instructions: "Eres unamini-aplicación de IA llamada 'IdeaBoost', que ayuda a los usuarios a generar ideas creativas, y respondes una sola vez, no le haces preguntas al usuario.",
-    input: "dame una idea para un proyecto escolar innovador.",
-    store: false,
+// Crear instancia de OpenAI
+// Nota: En un entorno de producción real, las llamadas a la API deberían hacerse desde un backend
+// para no exponer la API Key. Para este prototipo, habilitamos el uso en navegador.
+const openai = new OpenAI({
+    apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true
 });
 
-console.log(response.output_text);
+export async function generateIdea(userInput, config) {
+    try {
+        const response = await openai.chat.completions.create({
+            model: config.model || "gpt-4o-mini",
+            messages: [
+                { role: "system", content: config.systemInstructions },
+                { role: "user", content: userInput }
+            ],
+            store: false,
+        });
 
+        return response.choices[0].message.content;
+    } catch (error) {
+        console.error("Error al generar idea:", error);
+        throw new Error("No se pudo generar la idea. Por favor, intenta de nuevo.");
+    }
+}

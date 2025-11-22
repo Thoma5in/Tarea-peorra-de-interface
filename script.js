@@ -1,3 +1,5 @@
+import { generateIdea as generateIdeaAPI } from './iaConnection.js';
+
 const input = document.getElementById("userInput");
 const btn = document.getElementById("generateBtn");
 const errorMsg = document.getElementById("errorMsg");
@@ -6,7 +8,29 @@ const resultText = document.getElementById("resultText");
 const copyBtn = document.getElementById("copyBtn");
 const examples = document.querySelectorAll(".example");
 
-function showError() {
+// Cargar configuración de instrucciones
+let instructionsConfig = null;
+
+async function loadInstructions() {
+  try {
+    const response = await fetch('./instruccions.json');
+    instructionsConfig = await response.json();
+  } catch (error) {
+    console.error("Error al cargar instrucciones:", error);
+    // Fallback a instrucciones por defecto
+    instructionsConfig = {
+      systemInstructions: "Eres una mini-aplicación de IA llamada 'IdeaBoost', que ayuda a los usuarios a generar ideas creativas.",
+      model: "gpt-4o-mini",
+      reasoningEffort: "low"
+    };
+  }
+}
+
+// Cargar instrucciones al inicio
+loadInstructions();
+
+function showError(message = "No pude generar una idea. Escribe algo e inténtalo de nuevo.") {
+  errorMsg.textContent = message;
   errorMsg.classList.remove("hidden");
   resultBox.classList.add("hidden");
 }
@@ -17,8 +41,8 @@ function showResult(text) {
   errorMsg.classList.add("hidden");
 }
 
-// Generar idea (simulado) con pequeña animación de carga
-function generateIdea() {
+// Generar idea usando la API real de OpenAI
+async function generateIdea() {
   const value = input.value.trim();
 
   if (value === "") {
@@ -31,16 +55,19 @@ function generateIdea() {
   btn.classList.add("loading");
   btn.textContent = "Generando...";
 
-  setTimeout(() => {
-    // Mock de respuesta
-    const idea = `¡Idea lista! Esta propuesta nace de tu solicitud: "${value}". Puedes desarrollarla en 3 pasos: 1) Validar; 2) Prototipar; 3) Presentar.`;
+  try {
+    // Llamar a la API real de OpenAI
+    const idea = await generateIdeaAPI(value, instructionsConfig);
     showResult(idea);
-
+  } catch (error) {
+    console.error("Error:", error);
+    showError("Hubo un error al generar la idea. Por favor, intenta de nuevo.");
+  } finally {
     // Restaurar estado del botón
     btn.disabled = false;
     btn.classList.remove("loading");
     btn.textContent = "Generar Idea";
-  }, 700);
+  }
 }
 
 // Click en CTA

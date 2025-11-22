@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,6 +10,7 @@
   <!-- ...existing code... -->
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
   <div class="container">
@@ -21,20 +23,18 @@
 
       <!-- 2. Microcopy / Input -->
       <div class="input-group">
-        <input 
-          type="text" 
-          id="userInput" 
-          placeholder="Ej. 'App para organizar proyectos escolares con gamificación'..." 
-          class="input"
-          aria-label="Describe lo que necesitas crear o resolver"
-        />
+        <input type="text" id="userInput" placeholder="Ej. 'App para organizar proyectos escolares con gamificación'..."
+          class="input" aria-label="Describe lo que necesitas crear o resolver" />
       </div>
 
       <!-- 3. Ejemplos de prompts (clicables) -->
       <div class="examples" aria-hidden="false">
-        <p class="example" data-example="Dame una idea para un proyecto escolar innovador.">💡 “Dame una idea para un proyecto escolar innovador.”</p>
-        <p class="example" data-example="Propón un concepto creativo para un emprendimiento pequeño.">💡 “Propón un concepto creativo para un emprendimiento pequeño.”</p>
-        <p class="example" data-example="Ayúdame a generar ideas para un contenido en redes sociales.">💡 “Ayúdame a generar ideas para un contenido en redes sociales.”</p>
+        <p class="example" data-example="Dame una idea para un proyecto escolar innovador.">💡 “Dame una idea para un
+          proyecto escolar innovador.”</p>
+        <p class="example" data-example="Propón un concepto creativo para un emprendimiento pequeño.">💡 “Propón un
+          concepto creativo para un emprendimiento pequeño.”</p>
+        <p class="example" data-example="Ayúdame a generar ideas para un contenido en redes sociales.">💡 “Ayúdame a
+          generar ideas para un contenido en redes sociales.”</p>
       </div>
 
       <!-- 4. Botón principal (CTA) -->
@@ -49,12 +49,13 @@
       <div id="resultBox" class="result hidden" aria-live="polite">
         <div class="result-content">
           <p id="resultText"></p>
-         
+
         </div>
       </div>
     </main>
   </div>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
+
 </html>
