@@ -19,6 +19,9 @@ export async function generateIdea(userInput, config) {
             store: false,
         });
 
+        // Nuevo: mostrar en consola qué modelo respondió (si la respuesta lo indica) o el modelo solicitado
+        console.log("Modelo de IA que respondió:", response.model ?? config.model ?? "modelo desconocido");
+
         return response.choices[0].message.content;
     } catch (error) {
         console.error("Error al generar idea:", error);
