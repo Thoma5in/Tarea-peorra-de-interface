@@ -16,7 +16,7 @@ export async function generateIdea(userInput, config) {
                 { role: "system", content: config.systemInstructions },
                 { role: "user", content: userInput }
             ],
-            store: true,
+            store: false,
         });
 
         // Nuevo: mostrar en consola qué modelo respondió (si la respuesta lo indica) o el modelo solicitado
