@@ -368,6 +368,40 @@ body.dark-mode .chat-input-container {
   opacity: 0.6;
 }
 
+/* Estado de error del input */
+.chat-input.input-error {
+  border-color: #ef4444;
+  animation: shake 0.4s ease-in-out;
+}
+
+.chat-input.input-error::placeholder {
+  color: #ef4444;
+  opacity: 1;
+}
+
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
 .send-btn {
   width: 48px;
   height: 48px;

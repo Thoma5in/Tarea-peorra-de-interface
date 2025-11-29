@@ -103,6 +103,16 @@ async function sendMessage() {
   const value = input.value.trim();
 
   if (value === "") {
+    // Mostrar feedback visual de error
+    input.classList.add('input-error');
+    input.placeholder = "Por favor, escribe un mensaje antes de enviar";
+
+    // Remover el error después de 2 segundos
+    setTimeout(() => {
+      input.classList.remove('input-error');
+      input.placeholder = "Escribe tu mensaje aquí...";
+    }, 2000);
+
     return;
   }
 
