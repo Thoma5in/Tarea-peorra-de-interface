@@ -1,12 +1,27 @@
 import { generateIdea as generateIdeaAPI } from './iaConnection.js';
 
+// Elementos del DOM
 const input = document.getElementById("userInput");
-const btn = document.getElementById("generateBtn");
-const errorMsg = document.getElementById("errorMsg");
-const resultBox = document.getElementById("resultBox");
-const resultText = document.getElementById("resultText");
-const copyBtn = document.getElementById("copyBtn");
-const examples = document.querySelectorAll(".example");
+const sendBtn = document.getElementById("sendBtn");
+const chatMessages = document.getElementById("chatMessages");
+const exampleChips = document.querySelectorAll(".example-chip");
+const themeToggle = document.getElementById("themeToggle");
+
+// ===== TEMA OSCURO/CLARO =====
+// Cargar tema guardado o usar preferencia del sistema
+const savedTheme = localStorage.getItem('theme');
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+  document.body.classList.add('dark-mode');
+}
+
+// Toggle de tema
+themeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('dark-mode');
+  const isDark = document.body.classList.contains('dark-mode');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+});
 
 // Cargar configuración de instrucciones
 let instructionsConfig = null;
@@ -29,75 +44,127 @@ async function loadInstructions() {
 // Cargar instrucciones al inicio
 loadInstructions();
 
-function showError(message = "No pude generar una idea. Escribe algo e inténtalo de nuevo.") {
-  errorMsg.textContent = message;
-  errorMsg.classList.remove("hidden");
-  resultBox.classList.add("hidden");
+// Función para agregar un mensaje al chat
+function addMessage(text, isUser = false) {
+  const messageDiv = document.createElement("div");
+  messageDiv.className = `message ${isUser ? 'user-message' : 'assistant-message'}`;
+
+  const contentDiv = document.createElement("div");
+  contentDiv.className = "message-content";
+
+  const textP = document.createElement("p");
+  textP.textContent = text;
+
+  contentDiv.appendChild(textP);
+  messageDiv.appendChild(contentDiv);
+  chatMessages.appendChild(messageDiv);
+
+  // Scroll automático al último mensaje
+  scrollToBottom();
 }
 
-function showResult(text) {
-  resultText.textContent = text;
-  resultBox.classList.remove("hidden");
-  errorMsg.classList.add("hidden");
+// Función para mostrar indicador de escritura
+function showTypingIndicator() {
+  const typingDiv = document.createElement("div");
+  typingDiv.className = "message typing-indicator";
+  typingDiv.id = "typingIndicator";
+
+  const contentDiv = document.createElement("div");
+  contentDiv.className = "message-content";
+
+  for (let i = 0; i < 3; i++) {
+    const dot = document.createElement("div");
+    dot.className = "typing-dot";
+    contentDiv.appendChild(dot);
+  }
+
+  typingDiv.appendChild(contentDiv);
+  chatMessages.appendChild(typingDiv);
+  scrollToBottom();
 }
 
-// Generar idea usando la API real de OpenAI
-async function generateIdea() {
+// Función para ocultar indicador de escritura
+function hideTypingIndicator() {
+  const typingIndicator = document.getElementById("typingIndicator");
+  if (typingIndicator) {
+    typingIndicator.remove();
+  }
+}
+
+// Función para scroll automático
+function scrollToBottom() {
+  setTimeout(() => {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 100);
+}
+
+// Función principal para enviar mensaje
+async function sendMessage() {
   const value = input.value.trim();
 
   if (value === "") {
-    showError();
     return;
   }
 
-  // Indicar carga
-  btn.disabled = true;
-  btn.classList.add("loading");
-  btn.textContent = "Generando...";
+  // Agregar mensaje del usuario
+  addMessage(value, true);
+
+  // Limpiar input
+  input.value = "";
+
+  // Deshabilitar botón e input mientras se procesa
+  sendBtn.disabled = true;
+  input.disabled = true;
+
+  // Mostrar indicador de escritura
+  showTypingIndicator();
 
   try {
     // Llamar a la API real de OpenAI
     const idea = await generateIdeaAPI(value, instructionsConfig);
-    showResult(idea);
+
+    // Ocultar indicador de escritura
+    hideTypingIndicator();
+
+    // Agregar respuesta del asistente
+    addMessage(idea, false);
   } catch (error) {
     console.error("Error:", error);
-    showError("Hubo un error al generar la idea. Por favor, intenta de nuevo.");
+
+    // Ocultar indicador de escritura
+    hideTypingIndicator();
+
+    // Mostrar mensaje de error
+    addMessage("Lo siento, hubo un error al generar la idea. Por favor, intenta de nuevo.", false);
   } finally {
-    // Restaurar estado del botón
-    btn.disabled = false;
-    btn.classList.remove("loading");
-    btn.textContent = "Generar Idea";
+    // Rehabilitar botón e input
+    sendBtn.disabled = false;
+    input.disabled = false;
+    input.focus();
   }
 }
 
-// Click en CTA
-btn.addEventListener("click", generateIdea);
+// Event listeners
+sendBtn.addEventListener("click", sendMessage);
 
 // Enter para enviar
 input.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") generateIdea();
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
 });
 
 // Rellenar input desde ejemplos
-examples.forEach((el) => {
-  el.addEventListener("click", () => {
-    input.value = el.dataset.example || el.textContent;
-    generateIdea();
+exampleChips.forEach((chip) => {
+  chip.addEventListener("click", () => {
+    const example = chip.dataset.example;
+    input.value = example;
+    sendMessage();
   });
 });
 
-// Copiar resultado al portapapeles
-copyBtn.addEventListener("click", async () => {
-  const text = resultText.textContent;
-  if (!text) return;
-  try {
-    await navigator.clipboard.writeText(text);
-    const original = copyBtn.textContent;
-    copyBtn.textContent = "Copiado ✓";
-    setTimeout(() => (copyBtn.textContent = original), 1200);
-  } catch (err) {
-    // silencioso: no hay soporte
-    copyBtn.textContent = "No disponible";
-    setTimeout(() => (copyBtn.textContent = "Copiar"), 1200);
-  }
+// Focus en el input al cargar
+window.addEventListener("load", () => {
+  input.focus();
 });
